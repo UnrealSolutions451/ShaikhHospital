@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Change Password - Shaikh Hospital</title>
+
+<style>
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #03045e, #46a0fa);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+
+  .login-card {
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    width: 100%;
+    max-width: 380px;
+    text-align: center;
+    animation: fadeIn 0.4s ease-in-out;
+  }
+
+  .login-card h2 {
+    margin-bottom: 10px;
+    color: #03045e;
+  }
+
+  input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+  }
+
+  button {
+    width: 100%;
+    padding: 12px;
+    background: #46a0fa;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+
+  button:hover {
+    background: #0056b3;
+  }
+
+  .back-btn {
+    margin-top: 10px;
+    background: #03045e;
+  }
+
+  .back-btn:hover {
+    background: #001f6b;
+  }
+
+  .error {
+    color: red;
+    font-size: 0.9rem;
+    margin-top: 8px;
+  }
+
+  .success {
+    color: green;
+    font-size: 0.9rem;
+    margin-top: 8px;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+
+<body>
+
+<div class="login-card">
+  <h2>🔑 Change Password</h2>
+
+  <input type="email" id="email" placeholder="Enter email" required>
+  <input type="password" id="oldPassword" placeholder="Enter old password" required>
+  <input type="password" id="newPassword" placeholder="Enter new password" required>
+
+  <button id="changeBtn">Update Password</button>
+
+  <p id="msg"></p>
+
+  <button class="back-btn" onclick="window.location.href='login.html'">⬅ Back to Login</button>
+</div>
+
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+  import { 
+      getAuth, 
+      signInWithEmailAndPassword, 
+      updatePassword 
+  } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCJMLDJb4RS0LlZTbeaSxaAWwR9qK_XqhE",
+    authDomain: "shaikhhospital-bee4e.firebaseapp.com",
+    projectId: "shaikhhospital-bee4e",
+    storageBucket: "shaikhhospital-bee4e.firebasestorage.app",
+    messagingSenderId: "33126021879",
+    appId: "1:33126021879:web:4c3a5249e1248eb6aaf1f2",
+    measurementId: "G-HWPYX5ZLG1"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  document.getElementById("changeBtn").addEventListener("click", async () => {
+    const email = document.getElementById("email").value.trim();
+    const oldPass = document.getElementById("oldPassword").value.trim();
+    const newPass = document.getElementById("newPassword").value.trim();
+    const msg = document.getElementById("msg");
+
+    msg.textContent = "";
+    msg.className = "";
+
+    if (!email || !oldPass || !newPass) {
+      msg.textContent = "❌ Please fill all fields";
+      msg.className = "error";
+      return;
+    }
+
+    try {
+      // Login again to verify old password
+      const userCredential = await signInWithEmailAndPassword(auth, email, oldPass);
+      const user = userCredential.user;
+
+      // Update password
+      await updatePassword(user, newPass);
+
+      msg.textContent = "✔ Password updated successfully!";
+      msg.className = "success";
+
+    } catch (err) {
+      msg.textContent = "❌ " + err.message;
+      msg.className = "error";
+    }
+  });
+</script>
+
+</body>
+</html>
